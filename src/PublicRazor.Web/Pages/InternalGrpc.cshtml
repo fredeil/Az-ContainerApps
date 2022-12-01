@@ -1,0 +1,32 @@
+﻿@page
+@model PublicRazor.Web.Pages.InternalGrpcModel
+@{
+}
+
+<h2>Entities from <b>internal-grpc (non persistent)</b></h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>Entity ID</th>
+        <th>Display Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var entity in Model.Entities)
+    {
+        <tr>
+            <td>@entity.EntityId</td>
+            <td>@entity.DisplayName</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<hr/>
+<h2>Create a new entity</h2>
+<form method="post">
+    Display name: <input asp-for="NewEntityDisplayName" />
+    <input type="submit" />
+</form>
+

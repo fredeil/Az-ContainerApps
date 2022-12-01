@@ -1,0 +1,34 @@
+name: 'Internal GRPC Api'
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+    - src/InternalGrpc.Api/**
+    - src/Libraries/proto/_internal-grpc.proto
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+
+  build:
+    uses: ./.github/workflows/templates/_service-build.yml
+    secrets: inherit
+    with:
+      serviceName: internal-grpc
+      servicePath: src/InternalGrpc.Api
+      hostProjectName: InternalGrpc.Api
+
+  deploy:
+    strategy:
+      matrix:
+        environment: [ development, production ]
+
+    needs: build
+    uses: ./.github/workflows/templates/_service-deploy.yml
+    secrets: inherit
+    with:
+      service: internal-grpc
+      environment: ${{ matrix.environment }}

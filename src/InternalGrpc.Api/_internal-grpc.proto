@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option csharp_namespace = "InternalGrpc.Api";
+
+import "google/api/annotations.proto";
+
+service InternalGrpcEntities {
+  rpc ListEntities (ListEntitiesRequest) returns (ListEntitiesResponse) {
+    option (google.api.http) = {
+      get: "/v1/entitites"
+    };
+  };
+  rpc CreateEntity (CreateEntityRequest) returns (InternalGrpcEntityDto) {
+    option (google.api.http) = {
+      post: "/v1/entities"
+      body: "entity"
+    };
+  }
+}
+
+message CreateEntityRequest {
+  InternalGrpcEntityDto entity = 1;
+}
+
+message ListEntitiesRequest {
+}
+
+message ListEntitiesResponse {
+  repeated InternalGrpcEntityDto entities = 1;
+}
+
+message InternalGrpcEntityDto {
+  string entity_id = 1;
+  string display_name = 2;
+}

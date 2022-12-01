@@ -1,0 +1,33 @@
+name: 'Frontend'
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+    - src/PublicRazor.Web/**
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+
+  build:
+    uses: ./.github/workflows/templates/_service-build.yml
+    secrets: inherit
+    with:
+      serviceName: public-razor
+      servicePath: src/PublicRazor.Web
+      hostProjectName: PublicRazor.Web
+
+  deploy:
+    strategy:
+      matrix:
+        environment: [ development, production ]
+
+    needs: build
+    uses: ./.github/workflows/templates/_service-deploy.yml
+    secrets: inherit
+    with:
+      service: public-razor
+      environment: ${{ matrix.environment }}

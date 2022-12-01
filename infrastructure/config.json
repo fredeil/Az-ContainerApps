@@ -1,0 +1,82 @@
+{
+  "location": "westeurope",
+  "platformAbbreviation": "duacrew",
+
+  "services": {
+    "internal-grpc": {
+      "appType": "grpc"
+    },
+    "internal-grpc-sql-bus": {
+      "appType": "grpc",
+      "serviceBusEnabled": true,
+      "serviceBusTopics": [
+        "customer-created"
+      ],
+      "sqlDatabaseEnabled": true
+    },
+    "internal-http-bus": {
+      "appType": "http",
+      "serviceBusEnabled": true,
+      "serviceBusSubscriptions": [
+        "customer-created"
+      ]
+    },
+    "public-razor": {
+      "appType": "public"
+    }
+  },
+
+  "environments": {
+    "development": {
+      "environmentAbbreviation": "duacrew-dev",
+
+      "vnetAddressPrefix": "10.130.0.0/16",
+
+      "appsSubnetAddressPrefix": "10.130.0.0/21",
+
+      "services": {
+        "internal-grpc": {
+          "app": {
+            "cpu": "0.5",
+            "memory": "1.0Gi",
+            "minReplicas": 0,
+            "maxReplicas": 1,
+            "concurrentRequests": 15
+          }
+        },
+        "internal-grpc-sql-bus": {
+          "app": {
+            "cpu": "0.5",
+            "memory": "1.0Gi",
+            "minReplicas": 0,
+            "maxReplicas": 2
+          },
+          "sqlDatabase": {
+            "skuName": "Basic",
+            "skuTier": "Basic",
+            "skuCapacity": 5
+          }
+        },
+        "internal-http-bus": {
+          "ingressExternal": false,
+          "app": {
+            "cpu": "0.5",
+            "memory": "1.0Gi",
+            "minReplicas": 0,
+            "maxReplicas": 2
+          }
+        },
+        "public-razor": {
+        }
+      }
+    },
+
+    "production": {
+      "environmentAbbreviation": "duacrew-prd",
+      "vnetAddressPrefix": "10.131.0.0/16",
+      "appsSubnetAddressPrefix": "10.131.0.0/21",
+      "services": {
+      }
+    }
+  }
+}

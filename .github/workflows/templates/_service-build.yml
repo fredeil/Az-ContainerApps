@@ -1,0 +1,52 @@
+name: '[Template: Service Build]'
+
+on:
+  workflow_call:
+    inputs:
+      serviceName:
+        required: true
+        type: string
+      servicePath:
+        required: true
+        type: string
+      hostProjectName:
+        required: true
+        type: string
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v3
+
+    - uses: azure/login@v1
+      if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        enable-AzPSSession: true
+
+    - name: Docker Login to ACR
+      if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+      run: |
+        set -euo pipefail
+        access_token=$(az account get-access-token --query accessToken -o tsv)
+        refresh_token=$(curl https://${{ secrets.REGISTRY_SERVER }}/oauth2/exchange -v -d "grant_type=access_token&service=${{ secrets.REGISTRY_SERVER }}&access_token=$access_token" | jq -r .refresh_token)
+        docker login -u 00000000-0000-0000-0000-000000000000 --password-stdin ${{ secrets.REGISTRY_SERVER }} <<< "$refresh_token"
+
+    - uses: actions/setup-dotnet@v3
+    - run: dotnet --version
+
+    - name: 'Build service'
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          Set-Location ./infrastructure
+          ./build-service.ps1 -ServiceName "${{ inputs.serviceName }}" -ServicePath "${{ inputs.servicePath }}" -HostProjectName "${{ inputs.hostProjectName }}" `
+            -BuildNumber "${{ github.run_number }}" `
+            -UploadArtifacts $${{ (github.ref == 'refs/heads/main' && github.event_name != 'pull_request') }}
+        azPSVersion: "8.2.0"
+

@@ -1,0 +1,33 @@
+name: 'Internal HTTP Bus app'
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+    - src/InternalHttpBus.Api/**
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+
+  build:
+    uses: ./.github/workflows/templates/_service-build.yml
+    secrets: inherit
+    with:
+      serviceName: internal-http-bus
+      servicePath: src/InternalHttpBus.Api
+      hostProjectName: InternalHttpBus.Api
+
+  deploy:
+    strategy:
+      matrix:
+        environment: [ development, production ]
+
+    needs: build
+    uses: ./.github/workflows/templates/_service-deploy.yml
+    secrets: inherit
+    with:
+      service: internal-http-bus
+      environment: ${{ matrix.environment }}
