@@ -1,5 +1,6 @@
 [CmdletBinding()]
 Param ()
+
 "This script will set up the initial resources in the Azure Account you are logged into and in GitHub repository that its run from, to allow for automated deployments."
 $decision = $Host.UI.PromptForChoice($null, "Are you sure you want to execute this script?", ('&Yes', '&No'), 1)
 if ($decision -ne 0) {
@@ -18,14 +19,12 @@ if (Get-Command Get-AzContext -ErrorAction Ignore) {
 else {
     throw "'Azure PowerShell' is not installed. See https://docs.microsoft.com/en-us/powershell/azure/install-az-ps"
 }
-
 if (Get-Command bicep -ErrorAction Ignore) {
     Write-Host "Bicep CLI"
 }
 else {
     throw "'Bicep CLI' is not installed. See https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install"
 }
-
 if (Get-Command gh -ErrorAction Ignore) {
     Write-Host "GitHub CLI"
 }
@@ -122,7 +121,7 @@ Write-Host "Config loaded"
 $platformDeployment = New-AzSubscriptionDeployment `
     -Location $config.location `
     -Name ("init-platform-" + (Get-Date).ToString("yyyyMMddHHmmss")) `
-    -TemplateFile .\platform\main.bicep `
+    -TemplateFile .\infrastructure\platform\main.bicep `
     -TemplateParameterObject @{
     deployGitHubIdentity    = $true
     githubRepoNameWithOwner = $ghRepo.nameWithOwner
@@ -201,7 +200,7 @@ foreach ($environment in $environments) {
     $sqlDeployment = New-AzSubscriptionDeployment `
         -Location $config.location `
         -Name ("init-sql-" + (Get-Date).ToString("yyyyMMddHHmmss")) `
-        -TemplateFile .\environment\sql-identity.bicep `
+        -TemplateFile .\infrastructure\environment\sql-identity.bicep `
         -TemplateParameterObject @{
         environment = $environment
     }
