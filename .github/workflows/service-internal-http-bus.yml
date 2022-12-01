@@ -13,7 +13,7 @@ permissions:
 jobs:
 
   build:
-    uses: ./.github/workflows/templates/_service-build.yml
+    uses: ./.github/workflows/_service-build.yml
     secrets: inherit
     with:
       serviceName: internal-http-bus
@@ -26,7 +26,7 @@ jobs:
         environment: [ development, production ]
 
     needs: build
-    uses: ./.github/workflows/templates/_service-deploy.yml
+    uses: ./.github/workflows/_service-deploy.yml
     secrets: inherit
     with:
       service: internal-http-bus

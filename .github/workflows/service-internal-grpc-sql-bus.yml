@@ -14,7 +14,7 @@ permissions:
 jobs:
 
   build:
-    uses: ./.github/workflows/templates/_service-build.yml
+    uses: ./.github/workflows/_service-build.yml
     secrets: inherit
     with:
       serviceName: internal-grpc-sql-bus
@@ -27,7 +27,7 @@ jobs:
         environment: [ development, production ]
 
     needs: build
-    uses: ./.github/workflows/templates/_service-deploy.yml
+    uses: ./.github/workflows/_service-deploy.yml
     secrets: inherit
     with:
       service: internal-grpc-sql-bus
