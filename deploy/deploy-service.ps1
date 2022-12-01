@@ -1,6 +1,5 @@
 # Deploys all Azure resources that are used by one single service.
 # It also adds some resources to the environment (e.g. SQL database) and platform (role assignments).
-
 [CmdletBinding()]
 Param (
 
@@ -16,20 +15,11 @@ Param (
 
 $ErrorActionPreference = "Stop"
 
-#$Environment = "development"
-#$ServiceName = "customers"
-#$BuildNumber = "27"
-
-
-############################
 "Loading config"
+$config = Get-Content .\infrastructure\config.json | ConvertFrom-Json
 
-$config = Get-Content .\config.json | ConvertFrom-Json
 
-
-############################
 "Deploying Azure resources"
-
 New-AzSubscriptionDeployment `
     -Location $config.location `
     -Name ("svc-" + (Get-Date).ToString("yyyyMMddHHmmss")) `
